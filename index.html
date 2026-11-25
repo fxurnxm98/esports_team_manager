@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Esports Team Manager</title>
+
+  <style>
+    :root {
+      --bg: #090e1a;
+      --panel: #121b2d;
+      --panel-light: #19243b;
+      --border: #283551;
+      --text: #edf2ff;
+      --muted: #9baaca;
+      --accent: #8b5cf6;
+      --cyan: #22d3ee;
+      --danger: #fb7185;
+      --success: #34d399;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Tahoma, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.6;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      background: #0e1525;
+      border-right: 1px solid var(--border);
+      padding: 28px 18px;
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .brand span {
+      color: var(--cyan);
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 4px 0 32px;
+    }
+
+    .nav-label {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin: 0 12px 12px;
+    }
+
+    nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    nav button {
+      text-align: left;
+      border: 1px solid transparent;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    nav button:hover {
+      background: var(--panel-light);
+      color: white;
+    }
+
+    nav button.active {
+      color: white;
+      background: #8b5cf625;
+      border-color: #8b5cf660;
+    }
+
+    .sidebar-note {
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    main {
+      padding: 32px;
+      min-width: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 27px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 6px 0 0;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .pill {
+      border: 1px solid #34d39950;
+      color: var(--success);
+      background: #34d39910;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .hero {
+      padding: 28px;
+      border: 1px solid #8b5cf650;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at right, #8b5cf638, transparent 55%),
+        var(--panel);
+      margin-bottom: 22px;
+    }
+
+    .hero h2 {
+      font-size: 25px;
+      margin: 8px 0;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      letter-spacing: 2px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 32px;
+      margin-top: 5px;
+      color: var(--cyan);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+
+    .panel-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 13px 17px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-size: 12px;
+      color: var(--muted);
+      background: #0d1524;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #ffffff03;
+    }
+
+    .score {
+      font-weight: bold;
+      color: var(--cyan);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #94a3b81a;
+      color: #cbd5e1;
+      font-size: 11px;
+    }
+
+    .badge.completed,
+    .badge.available {
+      background: #34d39918;
+      color: var(--success);
+    }
+
+    .badge.live,
+    .badge.repair {
+      background: #fb718518;
+      color: var(--danger);
+    }
+
+    .badge.inuse {
+      background: #22d3ee18;
+      color: var(--cyan);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .toolbar input {
+      max-width: 380px;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .toolbar .count {
+      margin-left: auto;
+      color: var(--muted);
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: #0b1322;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--panel-light);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 9px 15px;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn.small {
+      font-size: 12px;
+      padding: 5px 10px;
+      margin-right: 5px;
+    }
+
+    .btn.danger {
+      color: var(--danger);
+      border-color: #fb718550;
+      background: #fb718510;
+    }
+
+    .form-body {
+      padding: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .required {
+      color: var(--danger);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+    }
+
+    .dashboard-bottom {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .equipment-summary {
+      padding: 22px;
+    }
+
+    .equipment-summary strong {
+      display: block;
+      font-size: 28px;
+      margin: 8px 0 18px;
+      color: var(--cyan);
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      max-width: min(440px, calc(100vw - 48px));
+      padding: 15px 20px;
+      background: #14382d;
+      border: 1px solid var(--success);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 12px 40px #0006;
+      z-index: 100;
+    }
+
+    #toast.error {
+      background: #421d28;
+      border-color: var(--danger);
+    }
+
+    footer {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 8px 0;
+    }
+
+    @media (max-width: 1100px) {
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .dashboard-bottom {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 18px;
+      }
+
+      .brand-subtitle {
+        margin-bottom: 16px;
+      }
+
+      .nav-label,
+      .sidebar-note {
+        display: none;
+      }
+
+      nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      nav button {
+        text-align: center;
+        padding: 9px 4px;
+        font-size: 12px;
+      }
+
+      main {
+        padding: 20px 14px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand">NEXUS<span> GG</span></div>
+      <div class="brand-subtitle">ESPORTS TEAM MANAGER</div>
+
+      <div class="nav-label">WORKSPACE</div>
+      <nav id="navigation" aria-label="เมนูหลัก"></nav>
+
+      <div class="sidebar-note">
+        Node.js + Express + SQLite<br>
+        จัดการทีม ผู้เล่น อุปกรณ์<br>
+        และการแข่งขันในระบบเดียว
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p class="muted" id="pageSubtitle">กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <span class="pill" id="connectionStatus">กำลังเชื่อมต่อ</span>
+      </header>
+
+      <section id="dashboard"></section>
+
+      <section id="management" hidden>
+        <div class="toolbar">
+          <input
+            id="search"
+            type="search"
+            placeholder="ค้นหาข้อมูล..."
+            aria-label="ค้นหาข้อมูล"
+          >
+
+          <button class="btn primary" id="addButton" type="button">
+            + เพิ่มข้อมูล
+          </button>
+
+          <button class="btn" id="refreshButton" type="button">
+            รีเฟรช
+          </button>
+
+          <span class="count" id="recordCount"></span>
+        </div>
+
+        <section class="panel" id="editor" hidden>
+          <div class="panel-heading">
+            <h2 id="formTitle">เพิ่มข้อมูล</h2>
+            <span class="muted">* ช่องที่จำเป็น</span>
+          </div>
+
+          <form id="recordForm" class="form-body">
+            <div id="formFields" class="form-grid"></div>
+
+            <div class="form-actions">
+              <button class="btn primary" id="saveButton" type="submit">
+                บันทึกข้อมูล
+              </button>
+
+              <button class="btn" id="cancelButton" type="button">
+                ยกเลิก
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="table-wrap" id="dataTable"></div>
+        </section>
+      </section>
+
+      <footer>
+        NEXUS GG · Esports Team Manager · ข้อมูลตั้งต้นเป็นข้อมูลจำลอง
+      </footer>
+    </main>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script>
+    const $ = selector => document.querySelector(selector);
+
+    const state = {
+      meta: {},
+      data: {},
+      dashboard: {},
+      current: "dashboard",
+      editingId: null,
+      toastTimer: null
+    };
+
+    const translations = {
+      Scheduled: "รอแข่งขัน",
+      Live: "กำลังแข่งขัน",
+      Completed: "จบการแข่งขัน",
+      Available: "พร้อมใช้งาน",
+      "In use": "กำลังใช้งาน",
+      Repair: "ส่งซ่อม"
+    };
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    function number(value) {
+      return Number(value).toLocaleString("th-TH", {
+        maximumFractionDigits: 2
+      });
+    }
+
+    function toast(message, isError = false) {
+      const element = $("#toast");
+
+      clearTimeout(state.toastTimer);
+
+      element.textContent = message;
+      element.classList.toggle("error", isError);
+      element.hidden = false;
+
+      state.toastTimer = setTimeout(() => {
+        element.hidden = true;
+      }, 6000);
+    }
+
+    async function api(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "ไม่สามารถดำเนินการได้");
+      }
+
+      return result;
+    }
+
+    async function loadData() {
+      const [data, dashboard] = await Promise.all([
+        api("/api/data"),
+        api("/api/dashboard")
+      ]);
+
+      state.data = data;
+      state.dashboard = dashboard;
+    }
+
+    function renderNavigation() {
+      $("#navigation").innerHTML = `
+        <button type="button" data-page="dashboard">
+          ภาพรวมระบบ
+        </button>
+
+        ${Object.entries(state.meta).map(([key, config]) => `
+          <button type="button" data-page="${key}">
+            ${escapeHTML(config.title)}
+          </button>
+        `).join("")}
+      `;
+    }
+
+    function statusBadge(value) {
+      const classes = {
+        Scheduled: "scheduled",
+        Live: "live",
+        Completed: "completed",
+        Available: "available",
+        "In use": "inuse",
+        Repair: "repair"
+      };
+
+      return `
+        <span class="badge ${classes[value] || ""}">
+          ${escapeHTML(translations[value] || value)}
+        </span>
+      `;
+    }
+
+    function renderDashboard() {
+      const { counts, recentMatches, roster, equipment } = state.dashboard;
+
+      $("#dashboard").innerHTML = `
+        <div class="hero">
+          <div class="eyebrow">TEAM OPERATIONS CENTER</div>
+          <h2>จัดการทีมให้พร้อมสำหรับทุกการแข่งขัน</h2>
+          <p class="muted">
+            ดูภาพรวมทีม ผู้เล่น อุปกรณ์ และผลการแข่งขันจากฐานข้อมูลเดียว
+          </p>
+        </div>
+
+        <div class="stats">
+          ${Object.entries(state.meta).map(([key, config]) => `
+            <div class="stat">
+              <span class="muted">${escapeHTML(config.title)}</span>
+              <strong>${number(counts[key])}</strong>
+            </div>
+          `).join("")}
+        </div>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <h2>แมตช์ล่าสุดตามวันที่แข่งขัน</h2>
+            <span class="muted">แสดงสูงสุด 8 รายการ</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>วันที่</th>
+                  <th>รายการ</th>
+                  <th>ทีม A</th>
+                  <th>คะแนน</th>
+                  <th>ทีม B</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                ${recentMatches.map(match => `
+                  <tr>
+                    <td>${escapeHTML(match.match_date)}</td>
+                    <td>${escapeHTML(match.tournament_name)}</td>
+                    <td>${escapeHTML(match.team_name)}</td>
+                    <td class="score">
+                      ${match.status === "Scheduled"
+                        ? "—"
+                        : `${number(match.team_score)} : ${number(match.opponent_score)}`}
+                    </td>
+                    <td>${escapeHTML(match.opponent_name)}</td>
+                    <td>${statusBadge(match.status)}</td>
+                  </tr>
+                `).join("") || `
+                  <tr>
+                    <td colspan="6" class="empty">ยังไม่มีแมตช์แข่งขัน</td>
+                  </tr>
+                `}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="dashboard-bottom">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>จำนวนผู้เล่นในแต่ละทีม</h2>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ทีม</th>
+                    <th>ภูมิภาค</th>
+                    <th>ผู้เล่น</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  ${roster.map(team => `
+                    <tr>
+                      <td>${escapeHTML(team.name)}</td>
+                      <td>${escapeHTML(team.region)}</td>
+                      <td>${number(team.player_count)} คน</td>
+                    </tr>
+                  `).join("") || `
+                    <tr>
+                      <td colspan="3" class="empty">ยังไม่มีทีม</td>
+                    </tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>ภาพรวมอุปกรณ์</h2>
+            </div>
+
+            <div class="equipment-summary">
+              <span class="muted">มูลค่าอุปกรณ์ทั้งหมด</span>
+              <strong>฿ ${number(equipment.total_value)}</strong>
+
+              <span class="muted">อุปกรณ์พร้อมใช้งาน</span>
+              <strong>${number(equipment.available)} ชิ้น</strong>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function displayValue(field, row) {
+      const value = row[field.key];
+
+      if (value === null || value === undefined) {
+        return "—";
+      }
+
+      if (field.ref) {
+        const target = state.data[field.ref].find(
+          item => item.id === Number(value)
+        );
+
+        if (!target) return `#${value}`;
+
+        return target[state.meta[field.ref].display];
+      }
+
+      if (field.options) {
+        return translations[value] || value;
+      }
+
+      if (field.type === "number") {
+        return number(value);
+      }
+
+      return value;
+    }
+
+    function renderTable() {
+      const config = state.meta[state.current];
+      const query = $("#search").value.trim().toLowerCase();
+      const allRows = state.data[state.current] || [];
+
+      const rows = allRows.filter(row => {
+        const searchable = [
+          row.id,
+          ...config.fields.map(field => displayValue(field, row))
+        ].join(" ").toLowerCase();
+
+        return searchable.includes(query);
+      });
+
+      $("#recordCount").textContent =
+        `${rows.length} / ${allRows.length} รายการ`;
+
+      $("#dataTable").innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              ${config.fields.map(field => `
+                <th>${escapeHTML(field.label)}</th>
+              `).join("")}
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${rows.map(row => `
+              <tr>
+                <td>#${row.id}</td>
+
+                ${config.fields.map(field => `
+                  <td>
+                    ${field.key === "status"
+                      ? statusBadge(row[field.key])
+                      : escapeHTML(displayValue(field, row))}
+                  </td>
+                `).join("")}
+
+                <td>
+                  <button
+                    type="button"
+                    class="btn small"
+                    data-edit="${row.id}"
+                  >
+                    แก้ไข
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn small danger"
+                    data-delete="${row.id}"
+                  >
+                    ลบ
+                  </button>
+                </td>
+              </tr>
+            `).join("") || `
+              <tr>
+                <td colspan="${config.fields.length + 2}" class="empty">
+                  ไม่พบข้อมูล
+                </td>
+              </tr>
+            `}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderPage() {
+      const isDashboard = state.current === "dashboard";
+
+      $("#dashboard").hidden = !isDashboard;
+      $("#management").hidden = isDashboard;
+
+      $("#pageTitle").textContent = isDashboard
+        ? "Dashboard"
+        : `จัดการ${state.meta[state.current].title}`;
+
+      $("#pageSubtitle").textContent = isDashboard
+        ? "ภาพรวมข้อมูลทีมอีสปอร์ตและการแข่งขัน"
+        : "เพิ่ม ค้นหา แก้ไข และลบข้อมูลที่บันทึกใน SQLite";
+
+      document.querySelectorAll("[data-page]").forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.page === state.current
+        );
+      });
+
+      if (isDashboard) {
+        renderDashboard();
+      } else {
+        renderTable();
+      }
+    }
+
+    function closeEditor() {
+      state.editingId = null;
+      $("#editor").hidden = true;
+      $("#recordForm").reset();
+    }
+
+    function createField(field, row) {
+      const value = row[field.key] ?? "";
+      const required = field.required ? "required" : "";
+      const id = `field-${field.key}`;
+
+      let input;
+
+      if (field.ref || field.options) {
+        const options = field.ref
+          ? state.data[field.ref].map(item => ({
+              value: item.id,
+              label: item[state.meta[field.ref].display]
+            }))
+          : field.options.map(option => ({
+              value: option,
+              label: translations[option] || option
+            }));
+
+        input = `
+          <select id="${id}" name="${field.key}" ${required}>
+            <option value="">
+              ${field.required ? "-- กรุณาเลือก --" : "-- ไม่ระบุ --"}
+            </option>
+
+            ${options.map(option => `
+              <option
+                value="${escapeHTML(option.value)}"
+                ${String(value) === String(option.value) ? "selected" : ""}
+              >
+                ${escapeHTML(option.label)}
+              </option>
+            `).join("")}
+          </select>
+        `;
+      } else {
+        input = `
+          <input
+            id="${id}"
+            name="${field.key}"
+            type="${field.type}"
+            value="${escapeHTML(value)}"
+            ${required}
+            ${field.min !== undefined ? `min="${field.min}"` : ""}
+            ${field.max !== undefined ? `max="${field.max}"` : ""}
+            ${field.type === "number"
+              ? `step="${field.integer ? "1" : "0.01"}"`
+              : 'maxlength="150"'}
+          >
+        `;
+      }
+
+      return `
+        <div>
+          <label for="${id}">
+            ${escapeHTML(field.label)}
+            ${field.required ? '<span class="required">*</span>' : ""}
+          </label>
+
+          ${input}
+        </div>
+      `;
+    }
+
+    function openEditor(id = null) {
+      const config = state.meta[state.current];
+      const row = id === null
+        ? {}
+        : state.data[state.current].find(item => item.id === id);
+
+      if (!row) {
+        toast("ไม่พบข้อมูลที่ต้องการแก้ไข", true);
+        return;
+      }
+
+      state.editingId = id;
+
+      $("#formTitle").textContent =
+        `${id === null ? "เพิ่ม" : "แก้ไข"}${config.title}`;
+
+      $("#formFields").innerHTML = config.fields
+        .map(field => createField(field, row))
+        .join("");
+
+      $("#editor").hidden = false;
+      $("#editor").scrollIntoView({ behavior: "smooth", block: "start" });
+
+      $("#formFields").querySelector("input, select")?.focus();
+    }
+
+    $("#navigation").addEventListener("click", event => {
+      const button = event.target.closest("[data-page]");
+
+      if (!button) return;
+
+      closeEditor();
+      state.current = button.dataset.page;
+      $("#search").value = "";
+      renderPage();
+    });
+
+    $("#search").addEventListener("input", renderTable);
+
+    $("#addButton").addEventListener("click", () => openEditor());
+    $("#cancelButton").addEventListener("click", closeEditor);
+
+    $("#refreshButton").addEventListener("click", async () => {
+      try {
+        await loadData();
+        closeEditor();
+        renderPage();
+        toast("โหลดข้อมูลล่าสุดแล้ว");
+      } catch (error) {
+        toast(error.message, true);
+      }
+    });
+
+    $("#recordForm").addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const tableName = state.current;
+      const editingId = state.editingId;
+      const payload = Object.fromEntries(
+        new FormData(event.currentTarget).entries()
+      );
+
+      const url = editingId === null
+        ? `/api/${tableName}`
+        : `/api/${tableName}/${editingId}`;
+
+      const saveButton = $("#saveButton");
+      saveButton.disabled = true;
+
+      try {
+        const result = await api(url, {
+          method: editingId === null ? "POST" : "PUT",
+          body: JSON.stringify(payload)
+        });
+
+        closeEditor();
+        toast(result.message);
+
+        try {
+          await loadData();
+          renderPage();
+        } catch (refreshError) {
+          toast(
+            "บันทึกสำเร็จ แต่โหลดข้อมูลล่าสุดไม่สำเร็จ กรุณารีเฟรชหน้าเว็บ",
+            true
+          );
+        }
+      } catch (error) {
+        toast(error.message, true);
+      } finally {
+        saveButton.disabled = false;
+      }
+    });
+
+    $("#dataTable").addEventListener("click", async event => {
+      const editButton = event.target.closest("[data-edit]");
+      const deleteButton = event.target.closest("[data-delete]");
+
+      if (editButton) {
+        openEditor(Number(editButton.dataset.edit));
+        return;
+      }
+
+      if (!deleteButton) return;
+
+      const id = Number(deleteButton.dataset.delete);
+      const tableName = state.current;
+
+      if (!confirm(`ยืนยันการลบข้อมูล #${id} ?`)) return;
+
+      deleteButton.disabled = true;
+
+      try {
+        const result = await api(`/api/${tableName}/${id}`, {
+          method: "DELETE"
+        });
+
+        closeEditor();
+        toast(result.message);
+
+        try {
+          await loadData();
+          renderPage();
+        } catch (refreshError) {
+          toast(
+            "ลบสำเร็จ แต่โหลดข้อมูลล่าสุดไม่สำเร็จ กรุณารีเฟรชหน้าเว็บ",
+            true
+          );
+        }
+      } catch (error) {
+        toast(error.message, true);
+      } finally {
+        deleteButton.disabled = false;
+      }
+    });
+
+    async function initialize() {
+      try {
+        state.meta = await api("/api/meta");
+        await loadData();
+
+        renderNavigation();
+        renderPage();
+
+        $("#connectionStatus").textContent = "เชื่อมต่อฐานข้อมูลแล้ว";
+      } catch (error) {
+        $("#connectionStatus").textContent = "เชื่อมต่อไม่สำเร็จ";
+        $("#pageSubtitle").textContent =
+          "ตรวจสอบว่าเปิดเซิร์ฟเวอร์ด้วย npm start แล้ว";
+
+        toast(error.message, true);
+      }
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
